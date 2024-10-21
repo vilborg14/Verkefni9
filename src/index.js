@@ -3,8 +3,8 @@
  * verður gefnar staðsetningar.
  */
 
-
 import { el } from './lib/elements.js';
+import { weatherSearch } from './lib/weather.js';
 
 /**
  * @typedef {Object} SearchLocation
@@ -74,6 +74,7 @@ function renderError(error) {
  * Birta biðstöðu í viðmóti.
  */
 function renderLoading() {
+  console.log('render loading');
   // TODO útfæra
 }
 
@@ -83,6 +84,14 @@ function renderLoading() {
  * @param {SearchLocation} location Staðsetning sem á að leita eftir.
  */
 async function onSearch(location) {
+  console.log('onSearch', location);
+
+  // Birta loading state
+  renderLoading();
+
+  const results = await weatherSearch(location.lat, location.lng);
+
+  console.log(results);
   // TODO útfæra
   // Hér ætti að birta og taka tillit til mismunandi staða meðan leitað er.
 }
@@ -145,8 +154,27 @@ function render(container, locations, onSearch, onSearchMyLocation) {
   parentElement.appendChild(headerElement);
 
   // TODO útfæra inngangstexta
-  
-  // TODO útfæra takka fyrir staðsetningar
+  // Búa til <div class="loctions">
+  const locationsElement = document.createElement('div');
+  locationsElement.classList.add('locations');
+
+  // Búa til <ul class="locations__list">
+  const locationsListElement = document.createElement('ul');
+  locationsListElement.classList.add('locations__list');
+
+  // <div class="loctions"><ul class="locations__list"></ul></div>
+  locationsElement.appendChild(locationsListElement);
+
+  // <div class="loctions"><ul class="locations__list"><li><li><li></ul></div>
+  for (const location of locations) {
+    const liButtonElement = renderLocationButton(location.title, () => {
+      console.log('Halló!!', location);
+      onSearch(location);
+    });
+    locationsListElement.appendChild(liButtonElement);
+  }
+
+  parentElement.appendChild(locationsElement);
 
   // TODO útfæra niðurstöðu element
 
