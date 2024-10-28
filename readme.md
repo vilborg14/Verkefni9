@@ -1,5 +1,9 @@
 # Vefforritun 1, 2024: Verkefni 9, JS #3
 
+- [Fyrirlestur 10.3: Inngangur að verkefni 9 (43:39)](https://youtu.be/TjY6TTenRq8)
+- [Fyrirlestur 11.2: Verkefni 9, async útfærslur (46:54)](https://www.youtube.com/watch?v=9_N6wTkdkvs)
+- [Fyrirlestur 11.4: Verkefni 9, útfærslur á stöðum (37:34)](https://www.youtube.com/watch?v=ufqLNV2zJgQ)
+
 ## Markmið
 
 - Forrita á móti DOM, _Document Object Model_.
