@@ -13,11 +13,37 @@ async function sleep(ms) {
 
 /**
  * Tekur við gögnum frá Open Meteo og skilar fylki af spám í formi Forecast.
- * @param {unknown} data Gögn frá Open Meteo.
+ * @param {any} data Gögn frá Open Meteo.
  * @returns {Array<Forecast>}
  */
 function parseResponse(data) {
-  return data;
+  console.log(data);
+
+  const hourly = data.hourly;
+  const { time = [], precipitation = [], temperature_2m = [] } = hourly;
+
+  const allForecasts = [];
+  for (let i = 0; i < time.length; i++) {
+    /** @type string */
+    const _time = time[i];
+
+    /** @type number */
+    const _pre = precipitation[i];
+
+    /** @type number */
+    const _temp = temperature_2m[i];
+
+    /** @type Forecast */
+    const forecast = {
+      time: _time,
+      precipitation: _pre,
+      temperature: _temp,
+    };
+
+    allForecasts.push(forecast);
+  }
+
+  return allForecasts;
 }
 
 /**
@@ -49,4 +75,6 @@ export async function weatherSearch(lat, lng) {
 
     return parseResponse(data);
   }
+
+  return [];
 }
