@@ -68,30 +68,30 @@ function renderIntoResultsContent(element) {
  * @param {Array<import('./lib/weather.js').Forecast>} results
  */
 function renderResults(location, results) {
-  const header = el(
-    'tr',
-    {},
+  const header = el('tr',{},
     el('th', {}, 'Tími'),
-    el('th', {}, 'Hiti'),
-    el('th', {}, 'Úrkoma'),
+    el('th', {}, 'Hiti (°C)'),
+    el('th', {}, 'Úrkoma (mm)'),
   );
-  console.log(results);
-  const body = el(
-    'tr',
-    {},
-    el('td', {}, 'Tími'),
-    el('td', {}, 'Hiti'),
-    el('td', {}, 'Úrkoma'),
+ 
+  const body = el('tbody',{},
+    ...results.map((forecast) => el('tr',{},
+    el('td', {}, forecast.time.slice(-5)),
+    el('td', {}, forecast.temperature),
+    el('td', {}, forecast.precipitation + ' ')))
+    
   );
 
   const resultsTable = el('table', { class: 'forecast' }, header, body);
+  
 
   renderIntoResultsContent(
     el(
       'section',
       {},
       el('h2', {}, `Leitarniðurstöður fyrir: ${location.title}`),
-      resultsTable,
+      el('p', {}, 'Spá fyrir daginn eftir breiddargráðu ${location.lat} og lengdargráðu ${location.lng}'),
+      resultsTable
     ),
   );
 }
@@ -100,6 +100,7 @@ function renderResults(location, results) {
  * Birta villu í viðmóti.
  * @param {Error} error
  */
+
 function renderError(error) {
   console.log(error);
   const message = error.message;
@@ -118,7 +119,10 @@ function renderLoading() {
  * Birtir biðstöðu, villu eða niðurstöður í viðmóti.
  * @param {SearchLocation} location Staðsetning sem á að leita eftir.
  */
+
 async function onSearch(location) {
+console.log('onSearch', location);
+
   renderLoading();
 
   let results;
@@ -131,16 +135,34 @@ async function onSearch(location) {
 
   renderResults(location, results ?? []);
 
-  // TODO útfæra
   // Hér ætti að birta og taka tillit til mismunandi staða meðan leitað er.
+
+  console.log(results);
 }
 
 /**
  * Framkvæmir leit að veðri fyrir núverandi staðsetningu.
  * Biður notanda um leyfi gegnum vafra.
  */
+
 async function onSearchMyLocation() {
-  // TODO útfæra
+  if (!navigator.geolocation) {
+    renderError(new Error('Vafrinn er ekki með staðsetningarþjónustu'));
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    async ({ coords: { latitude, longitude}}) => {
+      try {
+        await onSearch({ title: 'Þín staðsetning er', lat: latitude, lng: longitude});
+
+      } 
+      catch(error){
+        renderError(error);
+      }
+    },
+    () => renderError(new Error('Fékk ekki leyfi til að nálgast staðsetningu.'))
+  );
 }
 
 /**
@@ -149,6 +171,7 @@ async function onSearchMyLocation() {
  * @param {() => void} onSearch
  * @returns {HTMLElement}
  */
+
 function renderLocationButton(locationTitle, onSearch) {
   // Notum `el` fallið til að búa til element og spara okkur nokkur skref.
   const locationElement = el(
@@ -192,7 +215,14 @@ function render(container, locations, onSearch, onSearchMyLocation) {
   headerElement.appendChild(heading);
   parentElement.appendChild(headerElement);
 
-  // TODO útfæra inngangstexta
+  // Inngangstexta með DOM aðgerðum
+  const introElement = document.createElement('p');
+  introElement.appendChild(document.createTextNode('Veldu staðsetningu til að sjá spánna þar'));
+  parentElement.appendChild(introElement);
+  const locationElement = document.createElement('h2');
+  locationElement.appendChild(document.createTextNode('Staðsetningar'));
+  parentElement.appendChild(locationElement);
+
   // Búa til <div class="loctions">
   const locationsElement = document.createElement('div');
   locationsElement.classList.add('locations');
@@ -205,6 +235,8 @@ function render(container, locations, onSearch, onSearchMyLocation) {
   locationsElement.appendChild(locationsListElement);
 
   // <div class="loctions"><ul class="locations__list"><li><li><li></ul></div>
+  const myLocationButtonElement = renderLocationButton('Þín staðsetning (Þarfnast leyfis)', onSearchMyLocation);
+  locationsListElement.appendChild(myLocationButtonElement);
   for (const location of locations) {
     const liButtonElement = renderLocationButton(location.title, () => {
       console.log('Halló!!', location);

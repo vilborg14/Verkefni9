@@ -23,6 +23,7 @@ html {
 
   --color-light-gray: #f5f5f5;
   --color-background-zebra: var(--color-light-gray);
+  --color-background-transparent: #f5f5f5b3;
 }
 
 .hidden {
@@ -61,7 +62,8 @@ main {
 }
 
 .locations,
-.results {
+.output,
+.output section{
   display: flex;
   flex-direction: column;
   gap: var(--spacing);
@@ -88,3 +90,4 @@ main {
 .forecast tbody tr:nth-child(2n + 1) {
   background-color: var(--color-background-zebra);
 }
+
