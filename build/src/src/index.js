@@ -211,7 +211,7 @@ function render(container, locations, onSearch, onSearchMyLocation) {
   // Búum til <header> með beinum DOM aðgerðum
   const headerElement = document.createElement('header');
   const heading = document.createElement('h1');
-  heading.appendChild(document.createTextNode('<fyrirsögn>'));
+  heading.appendChild(document.createTextNode('Veðursíða'));
   headerElement.appendChild(heading);
   parentElement.appendChild(headerElement);
 
